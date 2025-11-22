@@ -67,15 +67,44 @@ productSelect.addEventListener("change", function (e) {
 });
 
 //渲染購物車
+let cartData = [];
+
 function getCart() {
   axios
     .get(`${costomerApi}/carts`)
     .then(function (response) {
-      console.log(response);
+      cartData = response.data.carts;
+      console.log(cartData);
+      renderCart();
     })
     .catch(function (error) {
       console.log(error);
     });
+}
+
+const shoppingCartTableBody = document.querySelector(
+  ".shoppingCart-table tbody"
+);
+
+function renderCart() {
+  let str = "";
+  cartData.forEach(function (item) {
+    str += `<tr>
+              <td>
+                <div class="cardItem-title">
+                  <img src="${item.product.images}" alt="" />
+                  <p>${item.product.title}</p>
+                </div>
+              </td>
+              <td>NT$${item.product.origin_price}</td>
+              <td>${item.quantity}</td>
+              <td>NT$${item.product.price}</td>
+              <td class="discardBtn">
+                <a href="#" class="material-icons"> clear </a>
+              </td>
+            </tr>`;
+  });
+  shoppingCartTableBody.innerHTML = str;
 }
 
 //統一管理初始化動作
