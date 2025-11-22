@@ -4,25 +4,28 @@ const token = "ncdwG72ozxZp8FePLHdpiZq3muC3";
 const baseUrl = "https://livejs-api.hexschool.io";
 const costomerApi = `${baseUrl}/api/livejs/v1/customer/${api_path}`;
 
-// 透過get取得商品資料
-axios
-  .get(`${costomerApi}/products`)
-  .then(function (response) {
-    console.log(response.data.products);
-    productData = response.data.products;
-    renderProduct();
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+//將get取得商品資料的過程包裝成函式
+function getProduct() {
+  // 透過get取得商品資料
+  axios
+    .get(`${costomerApi}/products`)
+    .then(function (response) {
+      // console.log(response.data.products);//測試用
+      productData = response.data.products;
+      renderProduct(productData);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
 
-// 渲染在畫面上
+// 將取得的產品資料渲染在畫面上
 const productWrap = document.querySelector(".productWrap");
 let productData = [];
 
-function renderProduct() {
+function renderProduct(data) {
   let str = "";
-  productData.forEach(function (item) {
+  data.forEach(function (item) {
     str += `
     <li class="productCard">
           <h4 class="productType">新品</h4>
@@ -38,3 +41,45 @@ function renderProduct() {
   });
   productWrap.innerHTML = str;
 }
+
+//篩選產品
+const productSelect = document.querySelector(".productSelect");
+
+function filterProduct(value) {
+  const result = [];
+  if (value === "全部") {
+    //選到"全部"選項時，所有會出現所有資料，並且中斷函式。
+    renderProduct(productData);
+    return;
+  } else {
+    productData.forEach(function (item) {
+      if (item.category === value) {
+        result.push(item);
+      }
+    });
+  }
+  renderProduct(result);
+}
+
+productSelect.addEventListener("change", function (e) {
+  filterProduct(e.target.value);
+  // console.log(e.target.value);//測試用
+});
+
+//渲染購物車
+function getCart() {
+  axios
+    .get(`${costomerApi}/carts`)
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+
+//統一管理初始化動作
+function init() {
+  getProduct();
+}
+init();
