@@ -157,7 +157,12 @@ function renderCart() {
 }
 
 //刪除所有購物車內容
-const discardAllBtn = document.querySelector(".discardAllBtn");
+shoppingCartTableFoot.addEventListener("click", function (e) {
+  if (e.target.classList.contains("discardAllBtn")) {
+    e.preventDefault();
+    deleteAllCart();
+  }
+});
 function deleteAllCart() {
   axios.delete(`${costomerApi}/carts`).then(function (response) {
     // console.log(response); //測試用
@@ -165,10 +170,6 @@ function deleteAllCart() {
     renderCart();
   });
 }
-discardAllBtn.addEventListener("click", function (e) {
-  e.preventDefault();
-  deleteAllCart();
-});
 //刪除購物車單一商品
 function deleteCart(id) {
   axios.delete(`${costomerApi}/carts/${id}`).then(function (response) {
@@ -203,6 +204,7 @@ function updateCart(id, qty) {
       console.log(error);
     });
 }
+//購物車商品增加
 shoppingCartTableBody.addEventListener("click", function (e) {
   const id = e.target.closest("tr").getAttribute("data-id");
   e.preventDefault();
@@ -210,7 +212,7 @@ shoppingCartTableBody.addEventListener("click", function (e) {
     // console.log(e.target.closest("tr").getAttribute("data-id"));//測試用
     deleteCart(id);
   }
-
+  //商品增加按鈕
   if (e.target.classList.contains("addBtn")) {
     let result = {};
     cartData.forEach(function (item) {
@@ -220,6 +222,16 @@ shoppingCartTableBody.addEventListener("click", function (e) {
     });
     let qty = result.quantity + 1;
     updateCart(id, qty);
+  }
+  //商品減少按鈕
+  if (e.target.classList.contains("minusBtn")) {
+    const cartItem = cartData.find((item) => item.id === id);
+    let qty = cartItem.quantity - 1;
+    if (qty === 0) {
+      deleteCart(id);
+    } else {
+      updateCart(id, qty);
+    }
   }
 });
 
@@ -292,5 +304,6 @@ orderInfoBtn.addEventListener("click", function (e) {
 //統一管理初始化動作
 function init() {
   getProduct();
+  getCart();
 }
 init();
