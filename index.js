@@ -66,6 +66,8 @@ productSelect.addEventListener("change", function (e) {
   // console.log(e.target.value);//測試用
 });
 
+//加入購物車按鈕
+
 //渲染購物車
 let cartData = [];
 
